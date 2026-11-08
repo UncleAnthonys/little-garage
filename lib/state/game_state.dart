@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/missions.dart';
+import '../data/projects.dart';
 import '../data/models.dart';
 import '../data/tow_truck.dart';
 import '../services/voice.dart';
@@ -33,6 +34,12 @@ class GameState extends ChangeNotifier {
   /// Play goes straight to the garage missions.
   bool everBuilt = false;
   Set<String> completed = {};
+
+  /// Vehicles the child owns. The tow truck is theirs from the start.
+  Set<VehicleType> fleet = {VehicleType.towTruck};
+
+  /// Steps finished on each town project.
+  Map<String, int> projectSteps = {};
   AgeBand ageBand = AgeBand.middle;
 
   /// The tow truck's crane, lowered for low bridges.
@@ -85,6 +92,19 @@ class GameState extends ChangeNotifier {
       soundsOn = p.getBool('soundsOn') ?? true;
       windDownMinutes = p.getInt('windDown') ?? 0;
       everBuilt = p.getBool('everBuilt') ?? false;
+      final savedFleet = p.getStringList('fleet');
+      if (savedFleet != null) {
+        fleet = {
+          VehicleType.towTruck,
+          for (final n in savedFleet)
+            ...VehicleType.values.where((v) => v.name == n),
+        };
+      }
+      final rawSteps = p.getString('projectSteps');
+      if (rawSteps != null) {
+        projectSteps = (jsonDecode(rawSteps) as Map<String, dynamic>)
+            .map((k, v) => MapEntry(k, (v as num).toInt()));
+      }
       completed = (p.getStringList('completed') ?? []).toSet();
       ageBand = AgeBand.values[(p.getInt('ageBand') ?? 1)
           .clamp(0, AgeBand.values.length - 1)];
@@ -114,6 +134,8 @@ class GameState extends ChangeNotifier {
     await p.setBool('everBuilt', everBuilt);
     await p.setStringList('completed', completed.toList());
     await p.setInt('ageBand', ageBand.index);
+    await p.setStringList('fleet', fleet.map((v) => v.name).toList());
+    await p.setString('projectSteps', jsonEncode(projectSteps));
   }
 
   void _changed() {
@@ -154,6 +176,31 @@ class GameState extends ChangeNotifier {
   void completeMission(Mission m, {int stars = 3}) {
     completed.add(m.id);
     this.stars += stars;
+    _changed();
+  }
+
+  // --- Town ---------------------------------------------------------------
+
+  int stepsDone(TownProject p) => projectSteps[p.id] ?? 0;
+  bool projectDone(TownProject p) => stepsDone(p) >= p.steps.length;
+
+  bool areaOpen(Area a) =>
+      a == Area.garageStreet || projects.any((p) => p.opens == a && projectDone(p));
+
+  /// Projects the child can work on now: in an open area and not finished.
+  List<TownProject> get openProjects =>
+      projects.where((p) => areaOpen(p.area) && !projectDone(p)).toList();
+
+  void addToFleet(VehicleType v) {
+    fleet.add(v);
+    _changed();
+  }
+
+  /// Marks the next step done. Finishing the project gives 5 stars.
+  void finishStep(TownProject p) {
+    final n = stepsDone(p) + 1;
+    projectSteps[p.id] = n;
+    if (n >= p.steps.length) stars += 5;
     _changed();
   }
 
@@ -258,6 +305,8 @@ class GameState extends ChangeNotifier {
     learned = {};
     spotted = {};
     completed = {};
+    fleet = {VehicleType.towTruck};
+    projectSteps = {};
     stickers = [];
     wheels = WheelStyle.classic;
     bodyColor = paintChoices[1].color;

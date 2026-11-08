@@ -420,11 +420,111 @@ void paintSimpleVehicle(Canvas c, CarLook look) {
       _wheel(c, const Offset(130, 150), 22, look.wheelTurn);
       _wheel(c, const Offset(244, 150), 22, look.wheelTurn);
       break;
+    case VehicleType.digger:
+      _digger(c, look);
+      break;
+    case VehicleType.mixer:
+      _mixer(c, look);
+      break;
     case VehicleType.towTruck:
       // Drawn with the child's own truck elsewhere; fall back to a plain one.
       _truck(c, look, const Color(0xFF9B5DE5));
       break;
   }
+}
+
+void _digger(Canvas c, CarLook look) {
+  // Tracks.
+  final track = RRect.fromLTRBR(56, 132, 262, 168, const Radius.circular(18));
+  c.drawRRect(track, Paint()..color = const Color(0xFF353A4D));
+  c.drawRRect(track, _ink);
+  for (var i = 0; i < 5; i++) {
+    final w = Offset(78 + i * 40.0, 150);
+    c.save();
+    c.translate(w.dx, w.dy);
+    c.rotate(look.wheelTurn);
+    c.drawCircle(Offset.zero, 12, Paint()..color = const Color(0xFF8D99AE));
+    c.drawLine(const Offset(-8, 0), const Offset(8, 0), Paint()..color = kInk..strokeWidth = 2);
+    c.restore();
+  }
+  // Body and cab.
+  final body = Path()..addRRect(RRect.fromLTRBR(110, 92, 262, 132, const Radius.circular(10)));
+  _fs(c, body, const Color(0xFFFFB703));
+  final cab = Path()
+    ..moveTo(176, 92)
+    ..lineTo(180, 40)
+    ..lineTo(240, 40)
+    ..lineTo(252, 92)
+    ..close();
+  _fs(c, cab, const Color(0xFFFFB703));
+  final win = Path()
+    ..moveTo(190, 50)
+    ..lineTo(234, 50)
+    ..lineTo(242, 86)
+    ..lineTo(188, 86)
+    ..close();
+  _fs(c, win, const Color(0xFFBDE8F5));
+  // Arm: boom up from the body, stick down to the bucket.
+  final arm = Paint()
+    ..color = const Color(0xFFFFB703)
+    ..strokeWidth = 16
+    ..strokeCap = StrokeCap.round;
+  const shoulder = Offset(150, 96), elbow = Offset(80, 34), wrist = Offset(40, 104);
+  c.drawLine(shoulder, elbow, arm);
+  c.drawLine(elbow, wrist, arm);
+  final armInk = Paint()
+    ..color = kInk
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+  c.drawCircle(elbow, 8, armInk);
+  c.drawLine(shoulder + const Offset(-10, -14), elbow + const Offset(4, 12),
+      Paint()..color = const Color(0xFF8D99AE)..strokeWidth = 5);
+  // Bucket with teeth.
+  final bucket = Path()
+    ..moveTo(26, 98)
+    ..lineTo(58, 98)
+    ..quadraticBezierTo(58, 130, 34, 136)
+    ..lineTo(18, 136)
+    ..close();
+  _fs(c, bucket, const Color(0xFF6C757D));
+  for (var i = 0; i < 3; i++) {
+    c.drawRect(Rect.fromLTWH(18 + i * 7.0, 136, 4, 6), Paint()..color = kInk);
+  }
+}
+
+void _mixer(Canvas c, CarLook look) {
+  c.drawRect(const Rect.fromLTWH(14, 120, 280, 16), Paint()..color = const Color(0xFF495057));
+  // Drum, tilted, with a spinning stripe.
+  c.save();
+  c.translate(104, 82);
+  c.rotate(-0.18);
+  final drum = Rect.fromCenter(center: Offset.zero, width: 176, height: 84);
+  c.drawOval(drum, Paint()..color = const Color(0xFFE9ECEF));
+  c.clipPath(Path()..addOval(drum));
+  final spin = (look.t * 40) % 60;
+  for (var x = -120.0 + spin; x < 120; x += 60) {
+    c.drawPath(
+        Path()
+          ..moveTo(x, -44)
+          ..lineTo(x + 26, -44)
+          ..lineTo(x - 4, 44)
+          ..lineTo(x - 30, 44)
+          ..close(),
+        Paint()..color = const Color(0xFFFF8C42));
+  }
+  c.restore();
+  c.save();
+  c.translate(104, 82);
+  c.rotate(-0.18);
+  c.drawOval(Rect.fromCenter(center: Offset.zero, width: 176, height: 84), _ink);
+  c.restore();
+  // Chute at the back.
+  c.drawLine(const Offset(18, 92), const Offset(4, 122),
+      Paint()..color = const Color(0xFF6C757D)..strokeWidth = 8..strokeCap = StrokeCap.round);
+  _cab(c, const Color(0xFF3A86FF), 196);
+  _wheel(c, const Offset(66, 150), 22, look.wheelTurn);
+  _wheel(c, const Offset(130, 150), 22, look.wheelTurn);
+  _wheel(c, const Offset(244, 150), 22, look.wheelTurn);
 }
 
 void _cab(Canvas c, Color color, double x) {

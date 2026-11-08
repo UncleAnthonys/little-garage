@@ -9,7 +9,7 @@ import '../services/voice.dart';
 import '../state/game_state.dart';
 import '../widgets/ui.dart';
 import 'assemble_screen.dart';
-import 'hq_screen.dart';
+import 'town_screen.dart';
 import 'parent_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _play() {
     if (GameScope.read(context).everBuilt) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HqScreen()));
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TownScreen()));
       return;
     }
     _build();

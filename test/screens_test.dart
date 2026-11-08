@@ -20,6 +20,11 @@ import 'package:little_garage/screens/route_screen.dart';
 import 'package:little_garage/screens/spot_screen.dart';
 import 'package:little_garage/screens/wash_screen.dart';
 import 'package:little_garage/data/models.dart';
+import 'package:little_garage/data/projects.dart';
+import 'package:little_garage/screens/fleet_screen.dart';
+import 'package:little_garage/screens/project_screen.dart';
+import 'package:little_garage/screens/town_screen.dart';
+import 'package:little_garage/screens/vehicle_intro_screen.dart';
 
 import 'helpers.dart';
 
@@ -39,6 +44,10 @@ void main() {
     'drive': () => const DriveScreen(),
     'fix': () => const FixScreen(problem: Breakdown.flatTyre),
     'hq': () => const HqScreen(),
+    'town': () => const TownScreen(firstVisit: true),
+    'fleet': () => const FleetScreen(),
+    for (final p in projects) 'project_${p.id}': () => ProjectScreen(project: p),
+    for (final v in vehicleParts.keys) 'intro_${v.name}': () => VehicleIntroScreen(type: v),
     'spot': () => const SpotScreen(),
     'parent': () => const ParentScreen(),
     'car_park': () => CarParkScreen(mission: missionById('car_park')),
@@ -152,7 +161,71 @@ void main() {
     await tester.pump();
     await tester.tap(find.byIcon(Icons.play_arrow_rounded));
     await run(tester, const Duration(seconds: 2));
-    expect(find.byType(HqScreen), findsOneWidget);
+    expect(find.byType(TownScreen), findsOneWidget);
+    await teardown(tester);
+  });
+
+  testWidgets('town with every project finished opens Riverside', (tester) async {
+    await setSize(tester, phone);
+    final s = await freshState();
+    for (final p in projects) {
+      s.projectSteps[p.id] = p.steps.length;
+    }
+    expect(s.areaOpen(Area.riverside), isTrue);
+    await tester.pumpWidget(host(s, const TownScreen()));
+    await run(tester, const Duration(seconds: 3));
+    expect(tester.takeException(), isNull);
+    await teardown(tester);
+  });
+
+  testWidgets('project: wrong vehicle explains, right vehicle does the step', (tester) async {
+    await setSize(tester, phone);
+    final s = await freshState();
+    s.addToFleet(VehicleType.digger);
+    final p = projectById('bramble_house');
+    await tester.pumpWidget(host(s, ProjectScreen(project: p)));
+    await run(tester, const Duration(seconds: 1));
+
+    Finder card(VehicleType v) => find.byWidgetPredicate((w) =>
+        w is CustomPaint &&
+        w.painter is SimpleVehiclePainter &&
+        (w.painter as SimpleVehiclePainter).look.type == v);
+
+    // The dump truck comes later: picking it doesn't advance.
+    await tester.tap(card(VehicleType.dumpTruck));
+    await run(tester, const Duration(milliseconds: 500));
+    expect(s.stepsDone(p), 0);
+
+    // The digger is right: tap it to do the work.
+    await tester.tap(card(VehicleType.digger));
+    await run(tester, const Duration(seconds: 2));
+    for (var i = 0; i < 6; i++) {
+      await tester.tap(card(VehicleType.digger));
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    expect(s.stepsDone(p), 1);
+    await run(tester, const Duration(seconds: 4));
+    expect(find.text('What next?'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await teardown(tester);
+  });
+
+  testWidgets('new vehicle: learning every part adds it to the fleet', (tester) async {
+    await setSize(tester, phone);
+    final s = await freshState();
+    await tester.pumpWidget(host(s, const VehicleIntroScreen(type: VehicleType.craneTruck)));
+    await run(tester, const Duration(seconds: 1));
+    final art = find.byWidgetPredicate((w) => w is CustomPaint && w.painter is SimpleVehiclePainter);
+    final box = tester.getRect(art);
+    final scale = box.width / kSimpleW;
+    for (final part in vehicleParts[VehicleType.craneTruck]!) {
+      await tester.tapAt(box.topLeft + part.area.center * scale);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    await run(tester, const Duration(seconds: 1));
+    await tester.tap(find.byIcon(Icons.add_rounded));
+    await run(tester, const Duration(seconds: 2));
+    expect(s.fleet.contains(VehicleType.craneTruck), isTrue);
     await teardown(tester);
   });
 

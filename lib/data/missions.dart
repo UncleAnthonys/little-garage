@@ -133,7 +133,7 @@ const tools = <Tool, ToolInfo>{
 
 enum Rescue { fire, tree, rocks, hurt, crowd, brokenCar }
 
-enum VehicleType { car, fireEngine, ambulance, bus, dumpTruck, craneTruck, towTruck, electricCar }
+enum VehicleType { car, fireEngine, ambulance, bus, dumpTruck, craneTruck, towTruck, electricCar, digger, mixer }
 
 const vehicleNames = <VehicleType, String>{
   VehicleType.car: 'car',
@@ -144,6 +144,8 @@ const vehicleNames = <VehicleType, String>{
   VehicleType.craneTruck: 'crane truck',
   VehicleType.towTruck: 'tow truck',
   VehicleType.electricCar: 'electric car',
+  VehicleType.digger: 'digger',
+  VehicleType.mixer: 'cement mixer',
 };
 
 /// What each vehicle is for. Said when the child picks the wrong one.
@@ -156,6 +158,8 @@ const vehicleJobs = <VehicleType, String>{
   VehicleType.towTruck: 'The tow truck pulls broken cars to the garage.',
   VehicleType.car: 'A car carries a few people.',
   VehicleType.electricCar: 'An electric car runs on electricity.',
+  VehicleType.digger: 'The digger scoops and digs holes with its bucket.',
+  VehicleType.mixer: 'The cement mixer spins concrete and pours it out.',
 };
 
 class RescueInfo {

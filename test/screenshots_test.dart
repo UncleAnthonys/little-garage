@@ -17,6 +17,11 @@ import 'package:little_garage/screens/home_screen.dart';
 import 'package:little_garage/screens/hq_screen.dart';
 import 'package:little_garage/screens/mission_flow.dart';
 import 'package:little_garage/screens/route_screen.dart';
+import 'package:little_garage/data/projects.dart';
+import 'package:little_garage/screens/fleet_screen.dart';
+import 'package:little_garage/screens/project_screen.dart';
+import 'package:little_garage/screens/town_screen.dart';
+import 'package:little_garage/screens/vehicle_intro_screen.dart';
 
 import 'helpers.dart';
 
@@ -59,6 +64,24 @@ void main() {
     await shot(tester, '13_car_park', CarParkScreen(mission: missionById('car_park')));
     await shot(tester, '14_bus', BusScreen(mission: missionById('bus_count')));
     await shot(tester, '15_complete', MissionCompleteScreen(mission: missionById('tree_down')));
+    await shot(tester, '20_town_start', const TownScreen(), wait: const Duration(seconds: 4));
+    await shot(tester, '21_town_grown', const TownScreen(), wait: const Duration(seconds: 4), prep: (s) {
+      for (final p in projects) {
+        s.projectSteps[p.id] = p.steps.length;
+      }
+      s.addToFleet(VehicleType.digger);
+    });
+    await shot(tester, '22_fleet', const FleetScreen(), prep: (s) {
+      s.addToFleet(VehicleType.digger);
+      s.addToFleet(VehicleType.dumpTruck);
+    });
+    await shot(tester, '23_project_choose', ProjectScreen(project: projectById('bramble_house')));
+    await shot(tester, '24_project_bridge_mid', ProjectScreen(project: projectById('river_bridge')),
+        prep: (s) => s.projectSteps['river_bridge'] = 2);
+    await shot(tester, '25_intro_crane', const VehicleIntroScreen(type: VehicleType.craneTruck));
+    await shot(tester, '26_intro_digger', const VehicleIntroScreen(type: VehicleType.digger));
+    await shot(tester, '27_project_park_mid', ProjectScreen(project: projectById('riverside_park')),
+        prep: (s) => s.projectSteps['riverside_park'] = 2);
 
     // Drives: hold the pedal to reach the interesting part.
     Future<void> hold(WidgetTester t, Duration d) async {

@@ -187,10 +187,7 @@ class _HqScreenState extends State<HqScreen> with SingleTickerProviderStateMixin
                           shadows: [Shadow(color: Colors.white, blurRadius: 6)])),
                 ),
               ),
-              Positioned(
-                  left: 20,
-                  top: 20,
-                  child: BackBubble(onTap: () => Navigator.of(context).popUntil((r) => r.isFirst))),
+              const Positioned(left: 20, top: 20, child: BackBubble()),
               Positioned(right: size.width * 0.03 + 8, bottom: 16, child: const StarCounter()),
             ]);
           },
