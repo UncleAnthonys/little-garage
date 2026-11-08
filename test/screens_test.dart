@@ -95,9 +95,7 @@ void main() {
     await run(tester, const Duration(seconds: 2)); // car arrives
 
     // Tap where the clue is, using the same layout maths as the screen.
-    final carW = phone.width * 0.56;
-    final carH = carW * kSimpleH / kSimpleW;
-    final box = Rect.fromLTWH(phone.width * 0.06, phone.height * 0.62 - carH * 0.92, carW, carH);
+    final box = DiagnoseScreen.carBoxFor(phone);
     final spot = faults[Fault.flatTyre]!.spot;
     await tester.tapAt(Offset(box.left + spot.dx * box.width, box.top + spot.dy * box.height));
     await run(tester, const Duration(seconds: 1));

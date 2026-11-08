@@ -172,9 +172,10 @@ class _BusScreenState extends State<BusScreen> with TickerProviderStateMixin {
     return Scaffold(
       body: LayoutBuilder(builder: (context, c) {
         final size = Size(c.maxWidth, c.maxHeight);
-        final busW = size.width * 0.58;
-        final busH = busW * kSimpleH / kSimpleW;
         final lane = RoadLayout.lane(size);
+        // Leave room above the bus for the banner and the counter badge.
+        final busW = math.min(size.width * 0.58, (lane - 150) / 0.92 * kSimpleW / kSimpleH);
+        final busH = busW * kSimpleH / kSimpleW;
         final busRect = Rect.fromLTWH(size.width * 0.06, lane - busH * 0.92, busW, busH);
         final s = busW / kSimpleW;
         final wobble = _phase == _Phase.driving ? math.sin(_scroll / 30) * 2 : 0.0;
@@ -249,8 +250,8 @@ class _BusScreenState extends State<BusScreen> with TickerProviderStateMixin {
 
         // Counter badge.
         children.add(Positioned(
-          left: busRect.left + busRect.width * 0.4,
-          top: busRect.top - 70,
+          left: busRect.left + 8,
+          top: busRect.top - 62,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
             decoration: BoxDecoration(

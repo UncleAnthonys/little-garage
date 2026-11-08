@@ -85,8 +85,10 @@ class _DispatchScreenState extends State<DispatchScreen> with TickerProviderStat
     return Scaffold(
       body: LayoutBuilder(builder: (context, c) {
         final size = Size(c.maxWidth, c.maxHeight);
-        final scene = Rect.fromLTWH(0, size.height * 0.04, size.width, size.height * 0.66);
-        final cardW = math.min(size.width * 0.2, 220.0);
+        final cardW = math.min(math.min(size.width * 0.2, 220.0), size.height * 0.28 / 0.7);
+        final cardsTop = size.height - 14 - cardW * 0.7;
+        const sceneTop = 104.0;
+        final scene = Rect.fromLTWH(0, sceneTop, size.width, math.max(80.0, cardsTop - sceneTop - 8));
 
         return AnimatedBuilder(
           animation: Listenable.merge([_clock, _drive, _solve]),

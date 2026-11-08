@@ -20,6 +20,16 @@ class DiagnoseScreen extends StatefulWidget {
   final Mission mission;
   const DiagnoseScreen({super.key, required this.mission});
 
+  /// Where the customer's car sits: below the banner, left of the toolbox.
+  static Rect carBoxFor(Size size) {
+    const bannerSpace = 104.0;
+    final maxH = size.height * 0.9 - bannerSpace;
+    final carW = math.min(size.width * 0.58, maxH * kSimpleW / kSimpleH);
+    final carH = carW * kSimpleH / kSimpleW;
+    final left = (size.width * 0.66 - carW) / 2;
+    return Rect.fromLTWH(left, bannerSpace + (maxH - carH) / 2 + 8, carW, carH);
+  }
+
   @override
   State<DiagnoseScreen> createState() => _DiagnoseScreenState();
 }
@@ -148,9 +158,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> with TickerProviderStat
     return Scaffold(
       body: LayoutBuilder(builder: (context, c) {
         final size = Size(c.maxWidth, c.maxHeight);
-        final carW = size.width * 0.56;
-        final carH = carW * kSimpleH / kSimpleW;
-        final carBox = Rect.fromLTWH(size.width * 0.06, size.height * 0.62 - carH * 0.92, carW, carH);
+        final carBox = DiagnoseScreen.carBoxFor(size);
         final toolsOpen = _step == _Step.tools || _step == _Step.fixing;
 
         return AnimatedBuilder(

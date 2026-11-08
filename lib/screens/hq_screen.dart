@@ -121,7 +121,7 @@ class _HqScreenState extends State<HqScreen> with SingleTickerProviderStateMixin
                     border: Border.all(color: const Color(0xFF7A5230), width: 6),
                   ),
                   child: GridView.count(
-                    crossAxisCount: 4,
+                    crossAxisCount: size.width < 1000 ? 5 : 4,
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                     childAspectRatio: 1,
