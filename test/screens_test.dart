@@ -210,17 +210,18 @@ void main() {
     await teardown(tester);
   });
 
-  testWidgets('new vehicle: learning every part adds it to the fleet', (tester) async {
+  testWidgets('new vehicle: dragging every part into place adds it to the fleet', (tester) async {
     await setSize(tester, phone);
     final s = await freshState();
     await tester.pumpWidget(host(s, const VehicleIntroScreen(type: VehicleType.craneTruck)));
     await run(tester, const Duration(seconds: 1));
-    final art = find.byWidgetPredicate((w) => w is CustomPaint && w.painter is SimpleVehiclePainter);
-    final box = tester.getRect(art);
-    final scale = box.width / kSimpleW;
+    final area = VehicleIntroScreen.areaFor(phone);
+    final card = VehicleIntroScreen.cardFor(phone);
+    final scale = area.width / kSimpleW;
     for (final part in vehicleParts[VehicleType.craneTruck]!) {
-      await tester.tapAt(box.topLeft + part.area.center * scale);
-      await tester.pump(const Duration(milliseconds: 300));
+      final target = area.topLeft + part.area.center * scale + const Offset(0, 24);
+      await tester.dragFrom(card.center, target - card.center);
+      await run(tester, const Duration(seconds: 3));
     }
     await run(tester, const Duration(seconds: 1));
     await tester.tap(find.byIcon(Icons.add_rounded));

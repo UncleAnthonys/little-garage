@@ -18,36 +18,45 @@ const fleetOrder = <VehicleType>[
   VehicleType.ambulance,
 ];
 
-/// A part of a fleet vehicle to tap and learn, in the 300 x 180 vehicle box.
+/// A part of a buildable vehicle: dragged into place in assembly order.
+/// [area] is where it sits in the 300 x 180 vehicle box.
 class VehiclePart {
+  final String id;
   final String name;
   final String line;
   final Rect area;
-  const VehiclePart(this.name, this.line, this.area);
+  const VehiclePart(this.id, this.name, this.line, this.area);
 }
 
+/// Parts in the order the child puts them together.
 const vehicleParts = <VehicleType, List<VehiclePart>>{
   VehicleType.digger: [
-    VehiclePart('Bucket', 'The bucket has teeth to scoop up dirt and rocks.', Rect.fromLTWH(10, 90, 56, 56)),
-    VehiclePart('Arm', 'The arm bends in the middle, like your elbow, to reach down and dig.', Rect.fromLTWH(60, 20, 90, 70)),
-    VehiclePart('Cab', 'The driver sits in the cab and works the levers.', Rect.fromLTWH(176, 36, 80, 58)),
-    VehiclePart('Tracks', 'Tracks go round like a belt, so the digger can drive on bumpy, muddy ground.', Rect.fromLTWH(56, 130, 206, 40)),
+    VehiclePart('tracks', 'Tracks', 'Tracks go round like a belt, so the digger can drive on bumpy, muddy ground.',
+        Rect.fromLTRB(56, 130, 262, 170)),
+    VehiclePart('body', 'Cab', 'The driver sits in the cab and works the levers.', Rect.fromLTRB(110, 40, 262, 132)),
+    VehiclePart('arm', 'Arm', 'The arm bends in the middle, like your elbow, to reach down and dig.',
+        Rect.fromLTRB(30, 24, 160, 114)),
+    VehiclePart('bucket', 'Bucket', 'The bucket has teeth to scoop up dirt and rocks.', Rect.fromLTRB(16, 96, 60, 144)),
   ],
   VehicleType.dumpTruck: [
-    VehiclePart('Tipper', 'The tipper lifts up at the front so the load slides out the back.', Rect.fromLTWH(10, 40, 182, 90)),
-    VehiclePart('Cab', 'The driver sits in the cab.', Rect.fromLTWH(196, 44, 94, 100)),
-    VehiclePart('Big wheels', 'Big wheels carry heavy loads without sinking.', Rect.fromLTWH(30, 124, 250, 52)),
+    VehiclePart('chassis', 'Wheels', 'Big wheels carry heavy loads without sinking.', Rect.fromLTRB(10, 124, 290, 176)),
+    VehiclePart('cab', 'Cab', 'The driver sits in the cab.', Rect.fromLTRB(194, 46, 290, 146)),
+    VehiclePart('tipper', 'Tipper', 'The tipper lifts up at the front so the load slides out the back.',
+        Rect.fromLTRB(8, 36, 194, 130)),
   ],
   VehicleType.mixer: [
-    VehiclePart('Drum', 'The drum spins round and round so the concrete stays runny.', Rect.fromLTWH(20, 38, 170, 84)),
-    VehiclePart('Chute', 'The chute is a slide that pours the concrete out.', Rect.fromLTWH(0, 86, 30, 44)),
-    VehiclePart('Cab', 'The driver sits in the cab.', Rect.fromLTWH(196, 44, 94, 100)),
+    VehiclePart('chassis', 'Wheels', 'Lots of wheels share the weight of the heavy concrete.', Rect.fromLTRB(12, 118, 296, 174)),
+    VehiclePart('cab', 'Cab', 'The driver sits in the cab.', Rect.fromLTRB(194, 46, 290, 146)),
+    VehiclePart('drum', 'Drum', 'The drum spins round and round so the concrete stays runny.', Rect.fromLTRB(12, 28, 196, 136)),
+    VehiclePart('chute', 'Chute', 'The chute is a slide that pours the concrete out.', Rect.fromLTRB(0, 84, 26, 128)),
   ],
   VehicleType.craneTruck: [
-    VehiclePart('Boom', 'The boom is the long arm that stretches up high.', Rect.fromLTWH(20, 0, 100, 104)),
-    VehiclePart('Hook', 'The hook holds heavy things while the crane lifts them.', Rect.fromLTWH(14, 52, 32, 30)),
-    VehiclePart('Counterweight', 'The counterweight is a heavy block that stops the crane tipping over.', Rect.fromLTWH(78, 80, 74, 34)),
-    VehiclePart('Cab', 'The driver sits in the cab.', Rect.fromLTWH(196, 44, 94, 100)),
+    VehiclePart('chassis', 'Wheels', 'Six wheels keep the heavy crane steady.', Rect.fromLTRB(8, 106, 292, 174)),
+    VehiclePart('cab', 'Cab', 'The driver sits in the cab.', Rect.fromLTRB(194, 46, 290, 146)),
+    VehiclePart('counterweight', 'Counterweight', 'The counterweight is a heavy block that stops the crane tipping over.',
+        Rect.fromLTRB(78, 80, 152, 114)),
+    VehiclePart('boom', 'Boom', 'The boom is the long arm that stretches up high.', Rect.fromLTRB(20, 0, 120, 114)),
+    VehiclePart('hook', 'Hook', 'The hook holds heavy things while the crane lifts them.', Rect.fromLTRB(20, 4, 40, 76)),
   ],
 };
 

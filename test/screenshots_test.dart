@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:little_garage/art/town_art.dart';
 import 'package:little_garage/data/missions.dart';
 import 'package:little_garage/data/models.dart';
 import 'package:little_garage/screens/assemble_screen.dart';
@@ -79,7 +80,17 @@ void main() {
     await shot(tester, '24_project_bridge_mid', ProjectScreen(project: projectById('river_bridge')),
         prep: (s) => s.projectSteps['river_bridge'] = 2);
     await shot(tester, '25_intro_crane', const VehicleIntroScreen(type: VehicleType.craneTruck));
-    await shot(tester, '26_intro_digger', const VehicleIntroScreen(type: VehicleType.digger));
+    await shot(tester, '26_intro_digger_midbuild', const VehicleIntroScreen(type: VehicleType.digger),
+        act: (t) async {
+      final area = VehicleIntroScreen.areaFor(phone);
+      final card = VehicleIntroScreen.cardFor(phone);
+      final scale = area.width / kSimpleW;
+      for (final part in vehicleParts[VehicleType.digger]!.take(2)) {
+        final target = area.topLeft + part.area.center * scale + const Offset(0, 24);
+        await t.dragFrom(card.center, target - card.center);
+        await run(t, const Duration(seconds: 3));
+      }
+    });
     await shot(tester, '27_project_park_mid', ProjectScreen(project: projectById('riverside_park')),
         prep: (s) => s.projectSteps['riverside_park'] = 2);
 
