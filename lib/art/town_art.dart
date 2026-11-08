@@ -393,6 +393,17 @@ void paintSimpleVehicle(Canvas c, CarLook look) {
         paintVehiclePart(c, look.type, id, look);
       }
       break;
+    case VehicleType.postVan:
+      _van(c, const Color(0xFFE63946));
+      // Envelope badge.
+      c.drawRect(const Rect.fromLTWH(70, 62, 60, 40), Paint()..color = Colors.white);
+      c.drawRect(const Rect.fromLTWH(70, 62, 60, 40), _ink);
+      c.drawLine(const Offset(70, 62), const Offset(100, 86), _ink);
+      c.drawLine(const Offset(130, 62), const Offset(100, 86), _ink);
+      c.drawRect(const Rect.fromLTWH(22, 112, 262, 8), Paint()..color = const Color(0xFFFFD23F));
+      _wheel(c, const Offset(70, 150), 22, look.wheelTurn);
+      _wheel(c, const Offset(232, 150), 22, look.wheelTurn);
+      break;
     case VehicleType.towTruck:
       // Drawn with the child's own truck elsewhere; fall back to a plain one.
       _truck(c, look, const Color(0xFF9B5DE5));

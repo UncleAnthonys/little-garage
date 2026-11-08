@@ -7,6 +7,7 @@ import 'package:little_garage/screens/assemble_screen.dart';
 import 'package:little_garage/screens/bus_screen.dart';
 import 'package:little_garage/screens/car_park_screen.dart';
 import 'package:little_garage/screens/customise_screen.dart';
+import 'package:little_garage/screens/delivery_screen.dart';
 import 'package:little_garage/screens/diagnose_screen.dart';
 import 'package:little_garage/screens/dispatch_screen.dart';
 import 'package:little_garage/screens/drive_screen.dart';
@@ -60,6 +61,8 @@ void main() {
       'dispatch_${m.id}': () => DispatchScreen(mission: m),
     for (final m in missions.where((m) => m.kind == MissionKind.drive))
       'route_${m.id}': () => RouteScreen(mission: m),
+    for (final m in missions.where((m) => m.kind == MissionKind.delivery))
+      'delivery_${m.id}': () => DeliveryScreen(mission: m),
     for (final m in missions.where((m) => m.kind == MissionKind.drive))
       'drive_${m.id}': () => DriveScreen(course: m.course, onFinished: () {}),
   };
@@ -150,6 +153,23 @@ void main() {
     expect(find.text('Green means go'), findsOneWidget);
     await g.up();
     await run(tester, const Duration(seconds: 6), steps: 60);
+    expect(tester.takeException(), isNull);
+    await teardown(tester);
+  });
+
+  testWidgets('fragile eggs: driving fast over a bump cracks an egg', (tester) async {
+    await setSize(tester, phone);
+    final s = await freshState();
+    await tester.pumpWidget(host(s, DeliveryScreen(mission: missionById('egg_delivery'))));
+    await tester.pump();
+    final go = await tester.startGesture(Offset(phone.width - 80, phone.height - 70));
+    var cracked = false;
+    for (var i = 0; i < 120 && !cracked; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+      cracked = find.text('Crack!').evaluate().isNotEmpty;
+    }
+    await go.up();
+    expect(cracked, isTrue);
     expect(tester.takeException(), isNull);
     await teardown(tester);
   });
@@ -248,6 +268,9 @@ void main() {
           expect(m.course, isNotNull, reason: m.id);
         case MissionKind.carPark:
         case MissionKind.bus:
+          break;
+        case MissionKind.delivery:
+          expect(m.delivery, isNotNull, reason: m.id);
           break;
       }
     }

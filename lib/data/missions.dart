@@ -133,7 +133,7 @@ const tools = <Tool, ToolInfo>{
 
 enum Rescue { fire, tree, rocks, hurt, crowd, brokenCar }
 
-enum VehicleType { car, fireEngine, ambulance, bus, dumpTruck, craneTruck, towTruck, electricCar, digger, mixer }
+enum VehicleType { car, fireEngine, ambulance, bus, dumpTruck, craneTruck, towTruck, electricCar, digger, mixer, postVan }
 
 const vehicleNames = <VehicleType, String>{
   VehicleType.car: 'car',
@@ -146,6 +146,7 @@ const vehicleNames = <VehicleType, String>{
   VehicleType.electricCar: 'electric car',
   VehicleType.digger: 'digger',
   VehicleType.mixer: 'cement mixer',
+  VehicleType.postVan: 'post van',
 };
 
 /// What each vehicle is for. Said when the child picks the wrong one.
@@ -160,6 +161,7 @@ const vehicleJobs = <VehicleType, String>{
   VehicleType.electricCar: 'An electric car runs on electricity.',
   VehicleType.digger: 'The digger scoops and digs holes with its bucket.',
   VehicleType.mixer: 'The cement mixer spins concrete and pours it out.',
+  VehicleType.postVan: 'The post van delivers letters and parcels to every house.',
 };
 
 class RescueInfo {
@@ -259,7 +261,14 @@ class DriveCourse {
 // Missions.
 // ---------------------------------------------------------------------------
 
-enum MissionKind { diagnose, dispatch, drive, carPark, bus }
+enum MissionKind { diagnose, dispatch, drive, carPark, bus, delivery }
+
+/// A delivery run. Post rounds practise house numbers; fragile loads
+/// practise gentle driving over bumps.
+class DeliveryPlan {
+  final bool fragile;
+  const DeliveryPlan({this.fragile = false});
+}
 
 enum Prep { monsterTyres, headlights, lowerCrane, roadSense }
 
@@ -278,6 +287,7 @@ class Mission {
   final Fault? fault;
   final VehicleType carType;
   final Rescue? rescue;
+  final DeliveryPlan? delivery;
   final DriveCourse? course;
 
   /// Things the child should think about before a drive. Shown as picture
@@ -303,6 +313,7 @@ class Mission {
     this.fault,
     this.carType = VehicleType.car,
     this.rescue,
+    this.delivery,
     this.course,
     this.clues = const [],
     this.routeChoice = false,
@@ -383,6 +394,17 @@ final missions = <Mission>[
     grownUp: 'In a real car park, count the red cars together. Then the blue ones!',
   ),
   const Mission(
+    id: 'post_round',
+    kind: MissionKind.delivery,
+    caller: driverDot,
+    title: 'Post round',
+    icon: Icons.mail_rounded,
+    call: 'Quack! Driver Dot here. My post van needs a driver today! Can you take each parcel to the right house number?',
+    delivery: DeliveryPlan(),
+    wow: 'Did you know? On many streets, odd numbers are on one side and even numbers on the other.',
+    grownUp: 'On a walk, read the house numbers together. Do they go up or down?',
+  ),
+  const Mission(
     id: 'dirty_windscreen',
     kind: MissionKind.diagnose,
     caller: farmer,
@@ -421,6 +443,17 @@ final missions = <Mission>[
     ),
     wow: 'Did you know? Red means stop, amber means get ready, and green means go.',
     grownUp: 'At a real crossing, wait for the green person together and talk about why we wait.',
+  ),
+  const Mission(
+    id: 'egg_delivery',
+    kind: MissionKind.delivery,
+    caller: farmer,
+    title: 'Fragile eggs',
+    icon: Icons.egg_rounded,
+    call: 'Baa! Farmer Woolly here. Can you take my eggs to the bakery? Eggs are fragile, so drive gently over the bumps!',
+    delivery: DeliveryPlan(fragile: true),
+    wow: 'Did you know? Fragile means it can break easily, so we handle it gently.',
+    grownUp: 'Carry an egg on a spoon together. What happens if you rush?',
   ),
   const Mission(
     id: 'park_hurt',

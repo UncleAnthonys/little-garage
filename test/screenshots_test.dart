@@ -11,6 +11,7 @@ import 'package:little_garage/data/models.dart';
 import 'package:little_garage/screens/assemble_screen.dart';
 import 'package:little_garage/screens/bus_screen.dart';
 import 'package:little_garage/screens/car_park_screen.dart';
+import 'package:little_garage/screens/delivery_screen.dart';
 import 'package:little_garage/screens/diagnose_screen.dart';
 import 'package:little_garage/screens/dispatch_screen.dart';
 import 'package:little_garage/screens/drive_screen.dart';
@@ -65,6 +66,20 @@ void main() {
     await shot(tester, '13_car_park', CarParkScreen(mission: missionById('car_park')));
     await shot(tester, '14_bus', BusScreen(mission: missionById('bus_count')));
     await shot(tester, '15_complete', MissionCompleteScreen(mission: missionById('tree_down')));
+    await shot(tester, '28_post_round', DeliveryScreen(mission: missionById('post_round')),
+        act: (t) async {
+      final g = await t.startGesture(Offset(phone.width - 80, phone.height - 70));
+      await run(t, const Duration(milliseconds: 1700), steps: 34);
+      await g.up();
+      await run(t, const Duration(seconds: 1), steps: 20);
+    });
+    await shot(tester, '29_fragile_eggs', DeliveryScreen(mission: missionById('egg_delivery')),
+        act: (t) async {
+      final g = await t.startGesture(Offset(phone.width - 80, phone.height - 70));
+      await run(t, const Duration(milliseconds: 3200), steps: 64);
+      await g.up();
+      await run(t, const Duration(milliseconds: 300), steps: 6);
+    });
     await shot(tester, '20_town_start', const TownScreen(), wait: const Duration(seconds: 4));
     await shot(tester, '21_town_grown', const TownScreen(), wait: const Duration(seconds: 4), prep: (s) {
       for (final p in projects) {

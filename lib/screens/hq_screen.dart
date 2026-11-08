@@ -219,6 +219,7 @@ class _JobCard extends StatelessWidget {
       MissionKind.drive => const Color(0xFF2DC653),
       MissionKind.carPark => const Color(0xFF6C757D),
       MissionKind.bus => const Color(0xFFFFB703),
+      MissionKind.delivery => const Color(0xFF9B5DE5),
     };
     return GestureDetector(
       onTap: () {

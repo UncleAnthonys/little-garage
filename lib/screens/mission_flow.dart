@@ -9,6 +9,7 @@ import '../state/game_state.dart';
 import '../widgets/ui.dart';
 import 'bus_screen.dart';
 import 'car_park_screen.dart';
+import 'delivery_screen.dart';
 import 'diagnose_screen.dart';
 import 'dispatch_screen.dart';
 import 'drive_screen.dart';
@@ -26,6 +27,7 @@ void openMissionJob(BuildContext context, Mission m) {
     MissionKind.drive => RouteScreen(mission: m),
     MissionKind.carPark => CarParkScreen(mission: m),
     MissionKind.bus => BusScreen(mission: m),
+    MissionKind.delivery => DeliveryScreen(mission: m),
   };
   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => job));
 }
