@@ -197,7 +197,7 @@ class _ProjectScreenState extends State<ProjectScreen> with TickerProviderStateM
                   (_holding ? math.sin(t * 40) * 2 : 0);
               children.add(Positioned(
                 left: size.width * 0.04,
-                top: scene.top + scene.height * 0.62 - vh * 0.9 + bob,
+                top: scene.top + scene.height * 0.72 - vh * 0.9 + bob,
                 width: vw,
                 height: vh,
                 child: Listener(

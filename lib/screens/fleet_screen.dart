@@ -64,7 +64,10 @@ class FleetScreen extends StatelessWidget {
                         ),
                         child: Column(children: [
                           Expanded(
-                            child: fleetVehicleArt(s, v, silhouette: !s.fleet.contains(v)),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: fleetVehicleArt(s, v, silhouette: !s.fleet.contains(v)),
+                            ),
                           ),
                           Text(
                             s.fleet.contains(v) ? vehicleNames[v]! : '?',

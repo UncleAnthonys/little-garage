@@ -56,7 +56,11 @@ class _VehicleIntroScreenState extends State<VehicleIntroScreen> with SingleTick
     final s = math.min(box.width / kSimpleW, box.height / kSimpleH);
     final origin = Offset((box.width - kSimpleW * s) / 2, (box.height - kSimpleH * s) / 2);
     final v = (local - origin) / s;
-    for (var i = 0; i < _parts.length; i++) {
+    // Smallest part first, so a hook inside the boom's area can be tapped.
+    final order = List<int>.generate(_parts.length, (i) => i)
+      ..sort((a, b) => (_parts[a].area.width * _parts[a].area.height)
+          .compareTo(_parts[b].area.width * _parts[b].area.height));
+    for (final i in order) {
       if (_parts[i].area.inflate(6).contains(v)) {
         Sfx.tap();
         setState(() {

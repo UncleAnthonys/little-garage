@@ -230,10 +230,10 @@ class ProjectSitePainter extends CustomPainter {
 
   @override
   void paint(Canvas c, Size size) {
-    // Frame a 520 x 300 unit window around the site, ground two thirds down.
-    final s = math.min(size.width / 520, size.height / 300);
+    // Frame a 400 x 230 unit window around the site, ground low down.
+    final s = math.min(size.width / 400, size.height / 230);
     c.save();
-    c.translate(size.width / 2, size.height * 0.62);
+    c.translate(size.width / 2, size.height * 0.72);
     c.scale(s);
     c.drawRect(const Rect.fromLTRB(-2000, 0, 2000, 400), Paint()..color = const Color(0xFF8BC34A));
     paintProjectSite(c, project, done, p, t);
