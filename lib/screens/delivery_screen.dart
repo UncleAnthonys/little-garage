@@ -230,6 +230,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> with SingleTickerProvid
   }
 
   Widget _pedal(IconData icon, Color color, int dir, double size) => Listener(
+        behavior: HitTestBehavior.opaque,
         onPointerDown: (_) => _dir = dir,
         onPointerUp: (_) => _dir = 0,
         onPointerCancel: (_) => _dir = 0,
