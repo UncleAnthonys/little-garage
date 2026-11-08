@@ -186,11 +186,11 @@ class _FixScreenState extends State<FixScreen> with TickerProviderStateMixin {
                           fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
                   for (final t in _tools)
                     BubbleButton(
-                      size: 84,
+                      size: (size.height * 0.16).clamp(52.0, 84.0),
                       color: _wrong == t ? const Color(0xFF8D99AE) : const Color(0xFF4C6EF5),
                       glow: _fixed && t == widget.problem,
                       onTap: () => _pick(t),
-                      child: _toolIcon(t, 50),
+                      child: _toolIcon(t, (size.height * 0.1).clamp(30.0, 50.0)),
                     ),
                 ],
               ),

@@ -136,8 +136,11 @@ void main() {
     await tester.pumpWidget(host(s, const DriveScreen(course: course, onFinished: _noop)));
     await tester.pump();
     final g = await tester.startGesture(const Offset(400, 200));
-    await run(tester, const Duration(seconds: 6), steps: 120);
+    // Reaches the line after about 3.4s; the light stays red until ~5s.
+    await run(tester, const Duration(milliseconds: 4300), steps: 86);
     expect(find.text('Red means stop'), findsOneWidget);
+    await run(tester, const Duration(seconds: 3), steps: 60);
+    expect(find.text('Green means go'), findsOneWidget);
     await g.up();
     await run(tester, const Duration(seconds: 6), steps: 60);
     expect(tester.takeException(), isNull);
