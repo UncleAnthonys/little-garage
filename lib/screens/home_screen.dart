@@ -9,7 +9,7 @@ import '../services/voice.dart';
 import '../state/game_state.dart';
 import '../widgets/ui.dart';
 import 'assemble_screen.dart';
-import 'garage_screen.dart';
+import 'hq_screen.dart';
 import 'parent_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -62,6 +62,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _play() {
+    if (GameScope.read(context).everBuilt) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HqScreen()));
+      return;
+    }
+    _build();
+  }
+
+  void _build() {
     Voice.instance.say("Let's build a tow truck!");
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => const AssembleScreen()));
@@ -180,12 +188,9 @@ class _HomeScreenState extends State<HomeScreen>
             right: 24,
             bottom: 20,
             child: Row(children: [
-              if (s.isBuilt) ...[
+              if (s.everBuilt) ...[
                 IconBubble(Icons.build_rounded,
-                    size: 76,
-                    color: const Color(0xFF9B5DE5),
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const GarageScreen()))),
+                    size: 76, color: const Color(0xFF9B5DE5), onTap: _build),
                 const SizedBox(width: 16),
               ],
               IconBubble(Icons.play_arrow_rounded,

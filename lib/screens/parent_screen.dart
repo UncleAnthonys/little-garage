@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/missions.dart';
 import '../data/models.dart';
 import '../state/game_state.dart';
 
@@ -92,6 +93,37 @@ class _ParentScreenState extends State<ParentScreen> {
                 onSelectionChanged: (v) => s.setWindDown(v.first),
               ),
             ),
+            ListTile(
+              title: const Text("Child's age"),
+              subtitle: const Text(
+                  'Younger: fewer choices and quicker hints. Older: more choices, more thinking time.'),
+              trailing: SegmentedButton<AgeBand>(
+                segments: [
+                  for (final a in AgeBand.values)
+                    ButtonSegment(value: a, label: Text(ageBandLabels[a]!)),
+                ],
+                selected: {s.ageBand},
+                onSelectionChanged: (v) => s.setAgeBand(v.first),
+              ),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Text('Take it off the screen',
+                  style: Theme.of(context).textTheme.titleMedium),
+            ),
+            for (final m in missions.where((m) => s.completed.contains(m.id)))
+              ListTile(
+                dense: true,
+                leading: Icon(m.icon),
+                title: Text(m.title),
+                subtitle: Text(m.grownUp),
+              ),
+            if (s.completed.isEmpty)
+              const ListTile(
+                dense: true,
+                title: Text('Ideas for real-life play appear here as jobs are finished.'),
+              ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.lock_open_rounded),

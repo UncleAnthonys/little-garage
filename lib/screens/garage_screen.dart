@@ -8,6 +8,7 @@ import '../state/game_state.dart';
 import '../widgets/ui.dart';
 import 'customise_screen.dart';
 import 'drive_screen.dart';
+import 'hq_screen.dart';
 import 'spot_screen.dart';
 import 'wash_screen.dart';
 
@@ -32,7 +33,7 @@ class _GarageScreenState extends State<GarageScreen>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Voice.instance.say(widget.fromBuild
-          ? 'Your truck is ready! Tap a part to learn about it.'
+          ? 'Your truck is ready! Tap a part to learn about it. Then tap the arrow to go to the garage. Someone needs your help!'
           : 'Welcome back to the garage!');
     });
   }
@@ -103,7 +104,10 @@ class _GarageScreenState extends State<GarageScreen>
             left: 20,
             top: 20,
             child: BackBubble(
-                onTap: () => Navigator.of(context).popUntil((r) => r.isFirst)),
+                onTap: () => widget.fromBuild
+                    ? Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const HqScreen()))
+                    : Navigator.of(context).maybePop()),
           ),
           const Positioned(right: 20, top: 20, child: StarCounter()),
           Positioned(

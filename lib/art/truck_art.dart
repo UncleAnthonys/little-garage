@@ -12,6 +12,14 @@ import '../data/models.dart';
 
 const double kVehicleW = 400;
 const double kVehicleH = 250;
+
+/// Crane lift that lays the boom flat for low bridges.
+const double kCraneDown = -0.6;
+
+/// Tallest point of the truck with the crane down (cab roof), and the
+/// underside a low bridge must clear, in vehicle units.
+const double kTruckRoofY = 60;
+const double kLowBridgeY = 48;
 const Color kInk = Color(0xFF2B2D42);
 
 Color fade(Color c, double opacity) =>
@@ -51,10 +59,10 @@ class TruckGeo {
   static const headlight = Offset(368, 150);
   static const steering = Offset(300, 108);
   static const driverHead = Offset(286, 100);
-  static const exhaustTop = Offset(239, 36);
+  static const exhaustTop = Offset(239, 64);
   static const nameplate = Rect.fromLTRB(256, 136, 334, 158);
   static const engineRect = Rect.fromLTRB(190, 104, 230, 140);
-  static const exhaustRect = Rect.fromLTRB(234, 40, 244, 140);
+  static const exhaustRect = Rect.fromLTRB(234, 70, 244, 140);
   static const cranePivot = Offset(170, 112);
   static const double craneLength = 130;
   static final double craneBaseAngle = math.atan2(-78, -104);
@@ -153,7 +161,7 @@ class TruckGeo {
       case PartKind.engine:
         return engineRect.inflate(4);
       case PartKind.exhaust:
-        return const Rect.fromLTRB(230, 32, 248, 140);
+        return const Rect.fromLTRB(230, 60, 248, 140);
       case PartKind.crane:
         return craneOutline(0).getBounds().inflate(6);
       case PartKind.headlights:
@@ -219,6 +227,9 @@ class VehicleLook {
   final Breakdown? breakdown;
   final bool sleeping;
 
+  /// Crane angle offset in radians. Negative lowers the boom flat.
+  final double craneLift;
+
   const VehicleLook({
     required this.built,
     required this.body,
@@ -234,6 +245,7 @@ class VehicleLook {
     this.lightsOn = false,
     this.breakdown,
     this.sleeping = false,
+    this.craneLift = 0,
   });
 }
 
@@ -376,7 +388,7 @@ void paintPart(Canvas c, PartKind k, VehicleLook look,
       c.drawRRect(pipe,
           Paint()..color = silhouette ? Colors.white : const Color(0xFF8D99AE));
       c.drawRRect(pipe, _stroke);
-      final cap = RRect.fromLTRBR(231, 34, 247, 42, const Radius.circular(3));
+      final cap = RRect.fromLTRBR(231, 64, 247, 72, const Radius.circular(3));
       c.drawRRect(cap,
           Paint()..color = silhouette ? Colors.white : const Color(0xFF5C677D));
       c.drawRRect(cap, _stroke);
@@ -384,7 +396,7 @@ void paintPart(Canvas c, PartKind k, VehicleLook look,
       break;
 
     case PartKind.crane:
-      final lift = active ? math.sin(t * math.pi) * 0.38 : 0.0;
+      final lift = look.craneLift + (active ? math.sin(t * math.pi) * 0.38 : 0.0);
       _fillStroke(c, TruckGeo.craneBase(), const Color(0xFF7B4FD6), silhouette);
       final boom = TruckGeo.craneBoom(lift);
       _fillStroke(c, boom, const Color(0xFFFFD60A), silhouette);

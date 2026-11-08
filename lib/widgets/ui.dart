@@ -19,6 +19,7 @@ VehicleLook lookFrom(
   bool lightsOn = false,
   Breakdown? breakdown,
   bool sleeping = false,
+  double? craneLift,
   List<PlacedSticker>? stickers,
 }) =>
     VehicleLook(
@@ -36,6 +37,7 @@ VehicleLook lookFrom(
       lightsOn: lightsOn,
       breakdown: breakdown,
       sleeping: sleeping,
+      craneLift: craneLift ?? (s.craneDown ? kCraneDown : 0),
     );
 
 Set<PartKind> get allParts => PartKind.values.toSet();

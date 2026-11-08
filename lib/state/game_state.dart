@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/missions.dart';
 import '../data/models.dart';
 import '../data/tow_truck.dart';
 import '../services/voice.dart';
@@ -27,6 +28,15 @@ class GameState extends ChangeNotifier {
 
   bool voiceOn = true;
   bool soundsOn = true;
+
+  /// True once the child has built the truck at least once. After that,
+  /// Play goes straight to the garage missions.
+  bool everBuilt = false;
+  Set<String> completed = {};
+  AgeBand ageBand = AgeBand.middle;
+
+  /// The tow truck's crane, lowered for low bridges.
+  bool craneDown = false;
 
   /// 0 = off.
   int windDownMinutes = 0;
@@ -74,6 +84,10 @@ class GameState extends ChangeNotifier {
       voiceOn = p.getBool('voiceOn') ?? true;
       soundsOn = p.getBool('soundsOn') ?? true;
       windDownMinutes = p.getInt('windDown') ?? 0;
+      everBuilt = p.getBool('everBuilt') ?? false;
+      completed = (p.getStringList('completed') ?? []).toSet();
+      ageBand = AgeBand.values[(p.getInt('ageBand') ?? 1)
+          .clamp(0, AgeBand.values.length - 1)];
     } catch (_) {
       // Corrupt or missing prefs: start fresh.
     }
@@ -97,6 +111,9 @@ class GameState extends ChangeNotifier {
     await p.setBool('voiceOn', voiceOn);
     await p.setBool('soundsOn', soundsOn);
     await p.setInt('windDown', windDownMinutes);
+    await p.setBool('everBuilt', everBuilt);
+    await p.setStringList('completed', completed.toList());
+    await p.setInt('ageBand', ageBand.index);
   }
 
   void _changed() {
@@ -114,7 +131,40 @@ class GameState extends ChangeNotifier {
   void buildPart(PartKind kind) {
     built.add(kind);
     learned.add(kind);
+    if (isBuilt) everBuilt = true;
     _changed();
+  }
+
+  // --- Missions ------------------------------------------------------------
+
+  /// The next mission not yet done, in order. Null when all are done.
+  Mission? get nextMission {
+    for (final m in missions) {
+      if (!completed.contains(m.id)) return m;
+    }
+    return null;
+  }
+
+  /// Missions the child can pick: everything done plus the next one.
+  bool isUnlocked(Mission m) {
+    final i = missions.indexOf(m);
+    return i == 0 || completed.contains(m.id) || completed.contains(missions[i - 1].id);
+  }
+
+  void completeMission(Mission m, {int stars = 3}) {
+    completed.add(m.id);
+    this.stars += stars;
+    _changed();
+  }
+
+  void setAgeBand(AgeBand a) {
+    ageBand = a;
+    _changed();
+  }
+
+  void setCraneDown(bool v) {
+    craneDown = v;
+    notifyListeners();
   }
 
   // --- Rewards -------------------------------------------------------------
@@ -207,6 +257,7 @@ class GameState extends ChangeNotifier {
     stars = 0;
     learned = {};
     spotted = {};
+    completed = {};
     stickers = [];
     wheels = WheelStyle.classic;
     bodyColor = paintChoices[1].color;
