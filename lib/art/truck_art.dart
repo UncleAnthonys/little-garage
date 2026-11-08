@@ -452,7 +452,7 @@ void paintPart(Canvas c, PartKind k, VehicleLook look,
       break;
 
     case PartKind.steering:
-      final ctr = TruckGeo.steering;
+      const ctr = TruckGeo.steering;
       c.drawLine(ctr, const Offset(296, 124),
           Paint()
             ..color = kInk

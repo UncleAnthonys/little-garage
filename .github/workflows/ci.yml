@@ -20,6 +20,8 @@ jobs:
       - run: flutter pub get
       - name: Analyze
         run: bash scripts/ci_run.sh Analyze flutter analyze --no-fatal-infos
+      - name: Test
+        run: bash scripts/ci_run.sh Test flutter test
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
